@@ -1,0 +1,137 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-gray-900">Stores</h1>
+    <button
+      type="button"
+      (click)="onAdd()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+    >
+      Add Store
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="bg-white p-4 rounded-lg shadow">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Search stores by name, address, or email..."
+      class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    />
+  </div>
+
+  <!-- Stores Table -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Name
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Address
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Phone
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Email
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Status
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              SRs / SMs
+            </th>
+            <th
+              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          @if (storeCounts().length === 0) {
+          <tr>
+            <td colspan="7" class="px-6 py-4 text-center text-gray-500">No stores found</td>
+          </tr>
+          } @else { @for (item of storeCounts(); track item.store.id) {
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ item.store.name }}
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">
+              {{ item.store.address }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ item.store.phone }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ item.store.email }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                [class.bg-green-100]="item.store.status === 'active'"
+                [class.text-green-800]="item.store.status === 'active'"
+                [class.bg-red-100]="item.store.status === 'inactive'"
+                [class.text-red-800]="item.store.status === 'inactive'"
+              >
+                {{ item.store.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ item.srCount }} / {{ item.smCount }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button
+                type="button"
+                (click)="onEdit(item.store)"
+                class="text-blue-600 hover:text-blue-900 mr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                (click)="onDelete(item.store)"
+                class="text-red-600 hover:text-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+          } }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+@if (showForm()) {
+<app-store-form [store]="editingStore()" (close)="onFormClose()" (saved)="onFormSave()" />
+}
+
+<app-confirm-dialog
+  [isOpen]="showDeleteDialog()"
+  title="Delete Store"
+  [message]="
+    'Are you sure you want to delete ' +
+    (storeToDelete()?.name || 'this store') +
+    '? This action cannot be undone.'
+  "
+  (confirmed)="onDeleteConfirm()"
+  (cancelled)="onDeleteCancel()"
+/>

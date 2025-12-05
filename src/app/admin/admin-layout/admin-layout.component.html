@@ -1,0 +1,49 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white min-h-screen">
+      <div class="p-6">
+        <h1 class="text-2xl font-bold">Admin Panel</h1>
+      </div>
+      <nav class="mt-8">
+        <ul class="space-y-2 px-4">
+          <li>
+            <a
+              routerLink="/admin/stores"
+              routerLinkActive="bg-gray-800"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-700"
+            >
+              Stores
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/admin/store-representatives"
+              routerLinkActive="bg-gray-800"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-700"
+            >
+              Store Representatives
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/admin/store-managers"
+              routerLinkActive="bg-gray-800"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-700"
+            >
+              Store Managers
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <router-outlet />
+    </main>
+  </div>
+</div>
