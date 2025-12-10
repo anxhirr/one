@@ -15,12 +15,13 @@ import { Store } from '../../models/store.model';
 import { StoreManagerService } from '../../services/store-manager.service';
 import { StoreRepresentativeService } from '../../services/store-representative.service';
 import { StoreService } from '../../services/store.service';
+import { MatIconModule } from '@angular/material/icon';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { StoreFormComponent } from './store-form/store-form.component';
 
 @Component({
   selector: 'app-stores',
-  imports: [CommonModule, FormsModule, StoreFormComponent, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, StoreFormComponent, ConfirmDialogComponent, MatIconModule],
   templateUrl: './stores.component.html',
   styleUrl: './stores.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

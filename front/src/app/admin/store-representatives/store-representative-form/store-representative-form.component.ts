@@ -9,13 +9,14 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { StoreRepresentative } from '../../../models/store-representative.model';
 import { StoreRepresentativeService } from '../../../services/store-representative.service';
 import { StoreService } from '../../../services/store.service';
 
 @Component({
   selector: 'app-store-representative-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './store-representative-form.component.html',
   styleUrl: './store-representative-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

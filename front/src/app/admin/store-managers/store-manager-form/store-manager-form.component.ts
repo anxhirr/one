@@ -9,13 +9,14 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { StoreManager } from '../../../models/store-manager.model';
 import { StoreManagerService } from '../../../services/store-manager.service';
 import { StoreService } from '../../../services/store.service';
 
 @Component({
   selector: 'app-store-manager-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './store-manager-form.component.html',
   styleUrl: './store-manager-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

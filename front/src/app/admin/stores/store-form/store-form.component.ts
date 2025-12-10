@@ -9,12 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { Store } from '../../../models/store.model';
 import { StoreService } from '../../../services/store.service';
 
 @Component({
   selector: 'app-store-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './store-form.component.html',
   styleUrl: './store-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

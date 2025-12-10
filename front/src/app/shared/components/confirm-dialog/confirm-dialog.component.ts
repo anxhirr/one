@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

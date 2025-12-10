@@ -4,8 +4,9 @@
     <button
       type="button"
       (click)="onAdd()"
-      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center gap-2"
     >
+      <mat-icon class="text-lg">add</mat-icon>
       Add Representative
     </button>
   </div>
@@ -38,8 +39,9 @@
       <button
         type="button"
         (click)="clearFilters()"
-        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center gap-2"
       >
+        <mat-icon class="text-base">clear</mat-icon>
         Clear Filters
       </button>
       }
@@ -124,15 +126,17 @@
               <button
                 type="button"
                 (click)="onEdit(item.representative)"
-                class="text-blue-600 hover:text-blue-900 mr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                class="text-blue-600 hover:text-blue-900 mr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded flex items-center gap-1 inline-flex"
               >
+                <mat-icon class="text-base">edit</mat-icon>
                 Edit
               </button>
               <button
                 type="button"
                 (click)="onDelete(item.representative)"
-                class="text-red-600 hover:text-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+                class="text-red-600 hover:text-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 rounded flex items-center gap-1 inline-flex"
               >
+                <mat-icon class="text-base">delete</mat-icon>
                 Delete
               </button>
             </td>

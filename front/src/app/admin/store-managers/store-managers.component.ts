@@ -14,12 +14,13 @@ import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StoreManager } from '../../models/store-manager.model';
 import { StoreManagerService } from '../../services/store-manager.service';
 import { StoreService } from '../../services/store.service';
+import { MatIconModule } from '@angular/material/icon';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { StoreManagerFormComponent } from './store-manager-form/store-manager-form.component';
 
 @Component({
   selector: 'app-store-managers',
-  imports: [CommonModule, FormsModule, StoreManagerFormComponent, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, StoreManagerFormComponent, ConfirmDialogComponent, MatIconModule],
   templateUrl: './store-managers.component.html',
   styleUrl: './store-managers.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
