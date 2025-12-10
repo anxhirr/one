@@ -3,8 +3,16 @@ import { AdminLayoutComponent } from './admin/admin-layout/admin-layout.componen
 import { StoreManagersComponent } from './admin/store-managers/store-managers.component';
 import { StoreRepresentativesComponent } from './admin/store-representatives/store-representatives.component';
 import { StoresComponent } from './admin/stores/stores.component';
+import { SmDashboardComponent } from './sm/dashboard/sm-dashboard.component';
+import { SrDashboardComponent } from './sr/dashboard/sr-dashboard.component';
+import { LoginComponent } from './auth/login/login.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
   {
     path: 'admin',
     component: AdminLayoutComponent,
@@ -27,6 +35,16 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
     ],
+  },
+  {
+    path: 'sr/dashboard',
+    component: SrDashboardComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'sm/dashboard',
+    component: SmDashboardComponent,
+    canActivate: [authGuard],
   },
   {
     path: '',

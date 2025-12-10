@@ -1,0 +1,115 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-gray-900">Store Representative Dashboard</h1>
+    <button
+      type="button"
+      (click)="refresh()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+    >
+      Refresh
+    </button>
+  </div>
+
+  @if (loading()) {
+  <div class="bg-white p-8 rounded-lg shadow text-center">
+    <p class="text-gray-500">Loading store data...</p>
+  </div>
+  } @else if (error()) {
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+    <p class="text-red-800">{{ error() }}</p>
+  </div>
+  } @else if (dashboardData()) {
+  @let data = dashboardData()!;
+  
+  <!-- Store Details Card -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-900">Store Details</h2>
+    </div>
+    <div class="px-6 py-4 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-sm font-medium text-gray-500">Store Name</label>
+          <p class="mt-1 text-lg text-gray-900">{{ data.store.name }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-500">Status</label>
+          <p class="mt-1">
+            <span
+              class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full"
+              [class.bg-green-100]="data.store.status === 'active'"
+              [class.text-green-800]="data.store.status === 'active'"
+              [class.bg-red-100]="data.store.status === 'inactive'"
+              [class.text-red-800]="data.store.status === 'inactive'"
+            >
+              {{ data.store.status }}
+            </span>
+          </p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-500">Address</label>
+          <p class="mt-1 text-gray-900">{{ data.store.address }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-500">Phone</label>
+          <p class="mt-1 text-gray-900">{{ data.store.phone }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-500">Email</label>
+          <p class="mt-1 text-gray-900">{{ data.store.email }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-500">Created</label>
+          <p class="mt-1 text-gray-900">{{ data.store.createdAt | date: 'medium' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+          <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Total Managers</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ data.metrics.totalManagers }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
+          <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Total Representatives</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ data.metrics.totalRepresentatives }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-purple-100 rounded-md p-3">
+          <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Store Age</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ data.metrics.storeAgeDays }} days</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+
