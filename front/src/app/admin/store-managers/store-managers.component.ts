@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StoreManager } from '../../models/store-manager.model';
 import { StoreManagerService } from '../../services/store-manager.service';
@@ -26,6 +27,8 @@ import { StoreManagerFormComponent } from './store-manager-form/store-manager-fo
 export class StoreManagersComponent implements OnInit, OnDestroy {
   private readonly smService = inject(StoreManagerService);
   private readonly storeService = inject(StoreService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
   private readonly searchSubject = new Subject<string>();
 
@@ -49,12 +52,41 @@ export class StoreManagersComponent implements OnInit, OnDestroy {
     });
   });
 
+  readonly hasActiveFilters = computed(() => {
+    return !!(this.searchTerm() || this.selectedStoreId());
+  });
+
   ngOnInit(): void {
-    // Debounce search term changes and trigger search
+    // Read query parameters from URL and initialize filters
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const searchParam = params['search'] || '';
+      const storeIdParam = params['storeId'] || '';
+
+      let searchChanged = false;
+      let storeIdChanged = false;
+
+      // Only update if values are different to avoid infinite loops
+      if (this.searchTerm() !== searchParam) {
+        this.searchTerm.set(searchParam);
+        searchChanged = true;
+      }
+      if (this.selectedStoreId() !== storeIdParam) {
+        this.selectedStoreId.set(storeIdParam);
+        storeIdChanged = true;
+      }
+
+      // Only trigger search if values actually changed (prevents duplicate calls)
+      if (searchChanged || storeIdChanged) {
+        this.triggerSearch();
+      }
+    });
+
+    // Debounce search term changes and update URL
     this.searchSubject
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => {
         this.triggerSearch();
+        this.updateUrlParams();
       });
   }
 
@@ -69,6 +101,24 @@ export class StoreManagersComponent implements OnInit, OnDestroy {
     this.smService.search(searchTerm, storeId);
   }
 
+  private updateUrlParams(): void {
+    const queryParams: { [key: string]: string } = {};
+
+    if (this.searchTerm()) {
+      queryParams['search'] = this.searchTerm();
+    }
+
+    if (this.selectedStoreId()) {
+      queryParams['storeId'] = this.selectedStoreId();
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: Object.keys(queryParams).length > 0 ? queryParams : {},
+      queryParamsHandling: 'merge',
+    });
+  }
+
   getStoreName(storeId: string): string {
     const store = this.stores().find((s) => s.id === storeId);
     return store?.name || 'Unknown Store';
@@ -81,6 +131,17 @@ export class StoreManagersComponent implements OnInit, OnDestroy {
 
   onStoreFilterChange(storeId: string): void {
     this.selectedStoreId.set(storeId);
+    this.triggerSearch();
+    this.updateUrlParams();
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedStoreId.set('');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+    });
     this.triggerSearch();
   }
 

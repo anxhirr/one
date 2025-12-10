@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StoreRepresentative } from '../../models/store-representative.model';
 import { StoreRepresentativeService } from '../../services/store-representative.service';
@@ -26,6 +27,8 @@ import { StoreRepresentativeFormComponent } from './store-representative-form/st
 export class StoreRepresentativesComponent implements OnInit, OnDestroy {
   private readonly srService = inject(StoreRepresentativeService);
   private readonly storeService = inject(StoreService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
   private readonly searchSubject = new Subject<string>();
 
@@ -49,12 +52,41 @@ export class StoreRepresentativesComponent implements OnInit, OnDestroy {
     });
   });
 
+  readonly hasActiveFilters = computed(() => {
+    return !!(this.searchTerm() || this.selectedStoreId());
+  });
+
   ngOnInit(): void {
-    // Debounce search term changes and trigger search
+    // Read query parameters from URL and initialize filters
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const searchParam = params['search'] || '';
+      const storeIdParam = params['storeId'] || '';
+
+      let searchChanged = false;
+      let storeIdChanged = false;
+
+      // Only update if values are different to avoid infinite loops
+      if (this.searchTerm() !== searchParam) {
+        this.searchTerm.set(searchParam);
+        searchChanged = true;
+      }
+      if (this.selectedStoreId() !== storeIdParam) {
+        this.selectedStoreId.set(storeIdParam);
+        storeIdChanged = true;
+      }
+
+      // Only trigger search if values actually changed (prevents duplicate calls)
+      if (searchChanged || storeIdChanged) {
+        this.triggerSearch();
+      }
+    });
+
+    // Debounce search term changes and update URL
     this.searchSubject
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => {
         this.triggerSearch();
+        this.updateUrlParams();
       });
   }
 
@@ -69,6 +101,24 @@ export class StoreRepresentativesComponent implements OnInit, OnDestroy {
     this.srService.search(searchTerm, storeId);
   }
 
+  private updateUrlParams(): void {
+    const queryParams: { [key: string]: string } = {};
+
+    if (this.searchTerm()) {
+      queryParams['search'] = this.searchTerm();
+    }
+
+    if (this.selectedStoreId()) {
+      queryParams['storeId'] = this.selectedStoreId();
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: Object.keys(queryParams).length > 0 ? queryParams : {},
+      queryParamsHandling: 'merge',
+    });
+  }
+
   getStoreName(storeId: string): string {
     const store = this.stores().find((s) => s.id === storeId);
     return store?.name || 'Unknown Store';
@@ -81,6 +131,17 @@ export class StoreRepresentativesComponent implements OnInit, OnDestroy {
 
   onStoreFilterChange(storeId: string): void {
     this.selectedStoreId.set(storeId);
+    this.triggerSearch();
+    this.updateUrlParams();
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedStoreId.set('');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+    });
     this.triggerSearch();
   }
 
