@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Store extends Model
+class StoreRepresentative extends Model
 {
     use HasFactory;
 
@@ -17,9 +17,9 @@ class Store extends Model
      */
     protected $fillable = [
         'name',
-        'address',
-        'phone',
         'email',
+        'phone',
+        'store_id',
         'status',
     ];
 
@@ -36,19 +36,11 @@ class Store extends Model
     }
 
     /**
-     * Get the representatives for the store.
+     * Get the store that owns the representative.
      */
-    public function representatives(): HasMany
+    public function store(): BelongsTo
     {
-        return $this->hasMany(StoreRepresentative::class);
-    }
-
-    /**
-     * Get the managers for the store.
-     */
-    public function managers(): HasMany
-    {
-        return $this->hasMany(StoreManager::class);
+        return $this->belongsTo(Store::class);
     }
 }
 

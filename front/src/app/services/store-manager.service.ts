@@ -1,47 +1,49 @@
-import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { StoreManager } from '../models/store-manager.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StoreManagerService {
-  private readonly managers = signal<StoreManager[]>([
-    {
-      id: '1',
-      name: 'Robert Taylor',
-      email: 'robert.taylor@store.com',
-      phone: '+1-555-2001',
-      storeId: '1',
-      status: 'active',
-    },
-    {
-      id: '2',
-      name: 'Jennifer Martinez',
-      email: 'jennifer.martinez@store.com',
-      phone: '+1-555-2002',
-      storeId: '2',
-      status: 'active',
-    },
-    {
-      id: '3',
-      name: 'William Garcia',
-      email: 'william.garcia@store.com',
-      phone: '+1-555-2003',
-      storeId: '3',
-      status: 'active',
-    },
-    {
-      id: '4',
-      name: 'Amanda Rodriguez',
-      email: 'amanda.rodriguez@store.com',
-      phone: '+1-555-2004',
-      storeId: '4',
-      status: 'inactive',
-    },
-  ]);
+  private readonly http = inject(HttpClient);
+  private readonly managers = signal<StoreManager[]>([]);
+  private readonly loading = signal<boolean>(false);
+  private loaded = false;
+
+  constructor() {
+    this.loadManagers();
+  }
 
   getAll() {
     return this.managers.asReadonly();
+  }
+
+  isLoading() {
+    return this.loading.asReadonly();
+  }
+
+  private loadManagers(force = false) {
+    if (this.loaded && !force) {
+      return;
+    }
+    this.loading.set(true);
+    const apiUrl = 'http://localhost:8000/api/store-managers';
+    this.http.get<StoreManager[]>(apiUrl).subscribe({
+      next: (managers) => {
+        this.managers.set(managers);
+        this.loaded = true;
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading store managers:', error);
+        this.loading.set(false);
+      },
+    });
+  }
+
+  refresh(): void {
+    this.loadManagers(true);
   }
 
   getById(id: string): StoreManager | undefined {
@@ -52,44 +54,41 @@ export class StoreManagerService {
     return this.managers().filter((manager) => manager.storeId === storeId);
   }
 
-  create(manager: Omit<StoreManager, 'id'>): StoreManager {
-    const newManager: StoreManager = {
-      ...manager,
-      id: this.generateId(),
-    };
-    this.managers.update((managers) => [...managers, newManager]);
-    return newManager;
+  create(manager: Omit<StoreManager, 'id'>): void {
+    const apiUrl = 'http://localhost:8000/api/store-managers';
+    this.http.post<StoreManager>(apiUrl, manager).subscribe({
+      next: (newManager) => {
+        this.managers.update((managers) => [...managers, newManager]);
+      },
+      error: (error) => {
+        console.error('Error creating store manager:', error);
+      },
+    });
   }
 
-  update(id: string, updates: Partial<Omit<StoreManager, 'id'>>): StoreManager | null {
-    const existing = this.getById(id);
-    if (!existing) {
-      return null;
-    }
-
-    const updated: StoreManager = {
-      ...existing,
-      ...updates,
-    };
-
-    this.managers.update((managers) =>
-      managers.map((manager) => (manager.id === id ? updated : manager))
-    );
-
-    return updated;
+  update(id: string, updates: Partial<Omit<StoreManager, 'id'>>): void {
+    const apiUrl = `http://localhost:8000/api/store-managers/${id}`;
+    this.http.put<StoreManager>(apiUrl, updates).subscribe({
+      next: (updatedManager) => {
+        this.managers.update((managers) =>
+          managers.map((manager) => (manager.id === id ? updatedManager : manager))
+        );
+      },
+      error: (error) => {
+        console.error('Error updating store manager:', error);
+      },
+    });
   }
 
-  delete(id: string): boolean {
-    const exists = this.getById(id);
-    if (!exists) {
-      return false;
-    }
-
-    this.managers.update((managers) => managers.filter((manager) => manager.id !== id));
-    return true;
-  }
-
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  delete(id: string): void {
+    const apiUrl = `http://localhost:8000/api/store-managers/${id}`;
+    this.http.delete(apiUrl).subscribe({
+      next: () => {
+        this.managers.update((managers) => managers.filter((manager) => manager.id !== id));
+      },
+      error: (error) => {
+        console.error('Error deleting store manager:', error);
+      },
+    });
   }
 }
