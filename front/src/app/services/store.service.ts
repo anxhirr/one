@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Store } from '../models/store.model';
 
@@ -45,6 +45,25 @@ export class StoreService {
 
   refresh(): void {
     this.loadStores(true);
+  }
+
+  search(searchTerm: string): void {
+    this.loading.set(true);
+    const apiUrl = 'http://localhost:8000/api/stores';
+    let params = new HttpParams();
+    if (searchTerm) {
+      params = params.set('search', searchTerm);
+    }
+    this.http.get<Store[]>(apiUrl, { params }).subscribe({
+      next: (stores) => {
+        this.stores.set(stores);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error searching stores:', error);
+        this.loading.set(false);
+      },
+    });
   }
 
   getById(id: string): Store | undefined {

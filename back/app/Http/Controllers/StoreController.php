@@ -12,9 +12,20 @@ class StoreController extends Controller
     /**
      * Display a listing of the stores.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $stores = Store::all()->map(function ($store) {
+        $query = Store::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('address', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $stores = $query->get()->map(function ($store) {
             return [
                 'id' => (string) $store->id,
                 'name' => $store->name,

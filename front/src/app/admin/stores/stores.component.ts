@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Store } from '../../models/store.model';
 import { StoreManagerService } from '../../services/store-manager.service';
 import { StoreRepresentativeService } from '../../services/store-representative.service';
@@ -15,10 +16,12 @@ import { StoreFormComponent } from './store-form/store-form.component';
   styleUrl: './stores.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StoresComponent {
+export class StoresComponent implements OnInit, OnDestroy {
   private readonly storeService = inject(StoreService);
   private readonly srService = inject(StoreRepresentativeService);
   private readonly smService = inject(StoreManagerService);
+  private readonly destroy$ = new Subject<void>();
+  private readonly searchSubject = new Subject<string>();
 
   readonly stores = this.storeService.getAll();
   readonly loading = this.storeService.isLoading();
@@ -28,27 +31,35 @@ export class StoresComponent {
   readonly showDeleteDialog = signal<boolean>(false);
   readonly storeToDelete = signal<Store | null>(null);
 
-  readonly filteredStores = computed(() => {
-    const term = this.searchTerm().toLowerCase();
-    if (!term) {
-      return this.stores();
-    }
-    return this.stores().filter(
-      (store) =>
-        store.name.toLowerCase().includes(term) ||
-        store.address.toLowerCase().includes(term) ||
-        store.email.toLowerCase().includes(term)
-    );
-  });
-
   readonly storeCounts = computed(() => {
-    const filtered = this.filteredStores();
-    return filtered.map((store) => ({
+    return this.stores().map((store) => ({
       store,
       srCount: this.srService.getByStoreId(store.id).length,
       smCount: this.smService.getByStoreId(store.id).length,
     }));
   });
+
+  ngOnInit(): void {
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((searchTerm) => {
+        this.storeService.search(searchTerm);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  onSearchChange(searchTerm: string): void {
+    this.searchTerm.set(searchTerm);
+    this.searchSubject.next(searchTerm);
+  }
 
   onAdd() {
     this.editingStore.set(null);
