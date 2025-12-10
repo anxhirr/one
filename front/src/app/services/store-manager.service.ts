@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { StoreManager } from '../models/store-manager.model';
 
@@ -9,7 +9,6 @@ export class StoreManagerService {
   private readonly http = inject(HttpClient);
   private readonly managers = signal<StoreManager[]>([]);
   private readonly loading = signal<boolean>(false);
-  private loaded = false;
 
   constructor() {
     this.loadManagers();
@@ -23,16 +22,19 @@ export class StoreManagerService {
     return this.loading.asReadonly();
   }
 
-  private loadManagers(force = false) {
-    if (this.loaded && !force) {
-      return;
-    }
+  private loadManagers(searchTerm?: string, storeId?: string) {
     this.loading.set(true);
     const apiUrl = 'http://localhost:8000/api/store-managers';
-    this.http.get<StoreManager[]>(apiUrl).subscribe({
+    let params = new HttpParams();
+    if (searchTerm) {
+      params = params.set('search', searchTerm);
+    }
+    if (storeId) {
+      params = params.set('storeId', storeId);
+    }
+    this.http.get<StoreManager[]>(apiUrl, { params }).subscribe({
       next: (managers) => {
         this.managers.set(managers);
-        this.loaded = true;
         this.loading.set(false);
       },
       error: (error) => {
@@ -43,7 +45,11 @@ export class StoreManagerService {
   }
 
   refresh(): void {
-    this.loadManagers(true);
+    this.loadManagers();
+  }
+
+  search(searchTerm?: string, storeId?: string): void {
+    this.loadManagers(searchTerm, storeId);
   }
 
   getById(id: string): StoreManager | undefined {

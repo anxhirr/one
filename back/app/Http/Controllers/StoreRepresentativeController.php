@@ -15,6 +15,15 @@ class StoreRepresentativeController extends Controller
     {
         $query = StoreRepresentative::query();
 
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%");
+            });
+        }
+
         if ($request->has('storeId') && $request->storeId) {
             $query->where('store_id', $request->storeId);
         }

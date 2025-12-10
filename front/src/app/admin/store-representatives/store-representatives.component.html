@@ -15,14 +15,16 @@
     <div>
       <input
         type="text"
-        [(ngModel)]="searchTerm"
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
         placeholder="Search by name, email, or phone..."
         class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
     </div>
     <div>
       <select
-        [(ngModel)]="selectedStoreId"
+        [value]="selectedStoreId()"
+        (change)="onStoreFilterChange($any($event.target).value)"
         class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       >
         <option value="">All Stores</option>
@@ -72,7 +74,11 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          @if (representativesWithStoreNames().length === 0) {
+          @if (loading()) {
+          <tr>
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">Loading...</td>
+          </tr>
+          } @else if (representativesWithStoreNames().length === 0) {
           <tr>
             <td colspan="6" class="px-6 py-4 text-center text-gray-500">
               No representatives found

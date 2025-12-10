@@ -1,6 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StoreManager } from '../../models/store-manager.model';
 import { StoreManagerService } from '../../services/store-manager.service';
 import { StoreService } from '../../services/store.service';
@@ -14,12 +23,15 @@ import { StoreManagerFormComponent } from './store-manager-form/store-manager-fo
   styleUrl: './store-managers.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StoreManagersComponent {
+export class StoreManagersComponent implements OnInit, OnDestroy {
   private readonly smService = inject(StoreManagerService);
   private readonly storeService = inject(StoreService);
+  private readonly destroy$ = new Subject<void>();
+  private readonly searchSubject = new Subject<string>();
 
   readonly managers = this.smService.getAll();
   readonly stores = this.storeService.getAll();
+  readonly loading = this.smService.isLoading();
   readonly searchTerm = signal<string>('');
   readonly selectedStoreId = signal<string>('');
   readonly showForm = signal<boolean>(false);
@@ -27,30 +39,8 @@ export class StoreManagersComponent {
   readonly showDeleteDialog = signal<boolean>(false);
   readonly managerToDelete = signal<StoreManager | null>(null);
 
-  readonly filteredManagers = computed(() => {
-    const term = this.searchTerm().toLowerCase();
-    const storeId = this.selectedStoreId();
-
-    let filtered = this.managers();
-
-    if (storeId) {
-      filtered = filtered.filter((manager) => manager.storeId === storeId);
-    }
-
-    if (term) {
-      filtered = filtered.filter(
-        (manager) =>
-          manager.name.toLowerCase().includes(term) ||
-          manager.email.toLowerCase().includes(term) ||
-          manager.phone.toLowerCase().includes(term)
-      );
-    }
-
-    return filtered;
-  });
-
   readonly managersWithStoreNames = computed(() => {
-    return this.filteredManagers().map((manager) => {
+    return this.managers().map((manager) => {
       const store = this.stores().find((s) => s.id === manager.storeId);
       return {
         manager,
@@ -59,9 +49,39 @@ export class StoreManagersComponent {
     });
   });
 
+  ngOnInit(): void {
+    // Debounce search term changes and trigger search
+    this.searchSubject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.triggerSearch();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private triggerSearch(): void {
+    const searchTerm = this.searchTerm() || undefined;
+    const storeId = this.selectedStoreId() || undefined;
+    this.smService.search(searchTerm, storeId);
+  }
+
   getStoreName(storeId: string): string {
     const store = this.stores().find((s) => s.id === storeId);
     return store?.name || 'Unknown Store';
+  }
+
+  onSearchChange(searchTerm: string): void {
+    this.searchTerm.set(searchTerm);
+    this.searchSubject.next(searchTerm);
+  }
+
+  onStoreFilterChange(storeId: string): void {
+    this.selectedStoreId.set(storeId);
+    this.triggerSearch();
   }
 
   onAdd() {
@@ -87,6 +107,7 @@ export class StoreManagersComponent {
   onFormSave() {
     this.showForm.set(false);
     this.editingManager.set(null);
+    this.triggerSearch();
   }
 
   onDeleteConfirm() {
@@ -95,6 +116,7 @@ export class StoreManagersComponent {
       this.smService.delete(manager.id);
       this.showDeleteDialog.set(false);
       this.managerToDelete.set(null);
+      this.triggerSearch();
     }
   }
 

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { StoreRepresentative } from '../models/store-representative.model';
 
@@ -9,7 +9,6 @@ export class StoreRepresentativeService {
   private readonly http = inject(HttpClient);
   private readonly representatives = signal<StoreRepresentative[]>([]);
   private readonly loading = signal<boolean>(false);
-  private loaded = false;
 
   constructor() {
     this.loadRepresentatives();
@@ -23,16 +22,19 @@ export class StoreRepresentativeService {
     return this.loading.asReadonly();
   }
 
-  private loadRepresentatives(force = false) {
-    if (this.loaded && !force) {
-      return;
-    }
+  private loadRepresentatives(searchTerm?: string, storeId?: string) {
     this.loading.set(true);
     const apiUrl = 'http://localhost:8000/api/store-representatives';
-    this.http.get<StoreRepresentative[]>(apiUrl).subscribe({
+    let params = new HttpParams();
+    if (searchTerm) {
+      params = params.set('search', searchTerm);
+    }
+    if (storeId) {
+      params = params.set('storeId', storeId);
+    }
+    this.http.get<StoreRepresentative[]>(apiUrl, { params }).subscribe({
       next: (representatives) => {
         this.representatives.set(representatives);
-        this.loaded = true;
         this.loading.set(false);
       },
       error: (error) => {
@@ -43,7 +45,11 @@ export class StoreRepresentativeService {
   }
 
   refresh(): void {
-    this.loadRepresentatives(true);
+    this.loadRepresentatives();
+  }
+
+  search(searchTerm?: string, storeId?: string): void {
+    this.loadRepresentatives(searchTerm, storeId);
   }
 
   getById(id: string): StoreRepresentative | undefined {
