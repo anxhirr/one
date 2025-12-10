@@ -21,6 +21,7 @@ export class StoresComponent {
   private readonly smService = inject(StoreManagerService);
 
   readonly stores = this.storeService.getAll();
+  readonly loading = this.storeService.isLoading();
   readonly searchTerm = signal<string>('');
   readonly showForm = signal<boolean>(false);
   readonly editingStore = signal<Store | null>(null);

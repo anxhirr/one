@@ -1,47 +1,46 @@
-import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { Store } from '../models/store.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StoreService {
-  private readonly stores = signal<Store[]>([
-    {
-      id: '1',
-      name: 'Downtown Store',
-      address: '123 Main Street, City Center',
-      phone: '+1-555-0101',
-      email: 'downtown@store.com',
-      status: 'active',
-    },
-    {
-      id: '2',
-      name: 'Mall Location',
-      address: '456 Shopping Mall, North District',
-      phone: '+1-555-0102',
-      email: 'mall@store.com',
-      status: 'active',
-    },
-    {
-      id: '3',
-      name: 'Airport Branch',
-      address: '789 Airport Road, Terminal 2',
-      phone: '+1-555-0103',
-      email: 'airport@store.com',
-      status: 'active',
-    },
-    {
-      id: '4',
-      name: 'Suburban Outlet',
-      address: '321 Suburban Avenue, West Side',
-      phone: '+1-555-0104',
-      email: 'suburban@store.com',
-      status: 'inactive',
-    },
-  ]);
+  private readonly http = inject(HttpClient);
+  private readonly stores = signal<Store[]>([]);
+  private readonly loading = signal<boolean>(false);
+  private loaded = false;
+
+  constructor() {
+    this.loadStores();
+  }
 
   getAll() {
     return this.stores.asReadonly();
+  }
+
+  isLoading() {
+    return this.loading.asReadonly();
+  }
+
+  private loadStores() {
+    if (this.loaded) {
+      return;
+    }
+    this.loading.set(true);
+    // Update this URL if your backend runs on a different port or domain
+    const apiUrl = 'http://localhost:8000/api/stores';
+    this.http.get<Store[]>(apiUrl).subscribe({
+      next: (stores) => {
+        this.stores.set(stores);
+        this.loaded = true;
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading stores:', error);
+        this.loading.set(false);
+      },
+    });
   }
 
   getById(id: string): Store | undefined {

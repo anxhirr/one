@@ -64,7 +64,11 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          @if (storeCounts().length === 0) {
+          @if (loading()) {
+          <tr>
+            <td colspan="7" class="px-6 py-4 text-center text-gray-500">Loading stores...</td>
+          </tr>
+          } @else if (storeCounts().length === 0) {
           <tr>
             <td colspan="7" class="px-6 py-4 text-center text-gray-500">No stores found</td>
           </tr>
