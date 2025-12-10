@@ -23,8 +23,8 @@ export class StoreService {
     return this.loading.asReadonly();
   }
 
-  private loadStores() {
-    if (this.loaded) {
+  private loadStores(force = false) {
+    if (this.loaded && !force) {
       return;
     }
     this.loading.set(true);
@@ -43,46 +43,49 @@ export class StoreService {
     });
   }
 
+  refresh(): void {
+    this.loadStores(true);
+  }
+
   getById(id: string): Store | undefined {
     return this.stores().find((store) => store.id === id);
   }
 
-  create(store: Omit<Store, 'id'>): Store {
-    const newStore: Store = {
-      ...store,
-      id: this.generateId(),
-    };
-    this.stores.update((stores) => [...stores, newStore]);
-    return newStore;
+  create(store: Omit<Store, 'id'>): void {
+    const apiUrl = 'http://localhost:8000/api/stores';
+    this.http.post<Store>(apiUrl, store).subscribe({
+      next: (newStore) => {
+        this.stores.update((stores) => [...stores, newStore]);
+      },
+      error: (error) => {
+        console.error('Error creating store:', error);
+      },
+    });
   }
 
-  update(id: string, updates: Partial<Omit<Store, 'id'>>): Store | null {
-    const existingStore = this.getById(id);
-    if (!existingStore) {
-      return null;
-    }
-
-    const updatedStore: Store = {
-      ...existingStore,
-      ...updates,
-    };
-
-    this.stores.update((stores) => stores.map((store) => (store.id === id ? updatedStore : store)));
-
-    return updatedStore;
+  update(id: string, updates: Partial<Omit<Store, 'id'>>): void {
+    const apiUrl = `http://localhost:8000/api/stores/${id}`;
+    this.http.put<Store>(apiUrl, updates).subscribe({
+      next: (updatedStore) => {
+        this.stores.update((stores) =>
+          stores.map((store) => (store.id === id ? updatedStore : store))
+        );
+      },
+      error: (error) => {
+        console.error('Error updating store:', error);
+      },
+    });
   }
 
-  delete(id: string): boolean {
-    const exists = this.getById(id);
-    if (!exists) {
-      return false;
-    }
-
-    this.stores.update((stores) => stores.filter((store) => store.id !== id));
-    return true;
-  }
-
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  delete(id: string): void {
+    const apiUrl = `http://localhost:8000/api/stores/${id}`;
+    this.http.delete(apiUrl).subscribe({
+      next: () => {
+        this.stores.update((stores) => stores.filter((store) => store.id !== id));
+      },
+      error: (error) => {
+        console.error('Error deleting store:', error);
+      },
+    });
   }
 }
