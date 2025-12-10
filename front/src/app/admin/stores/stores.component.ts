@@ -26,6 +26,7 @@ export class StoresComponent implements OnInit, OnDestroy {
   readonly stores = this.storeService.getAll();
   readonly loading = this.storeService.isLoading();
   readonly searchTerm = signal<string>('');
+  readonly statusFilter = signal<string>('');
   readonly showForm = signal<boolean>(false);
   readonly editingStore = signal<Store | null>(null);
   readonly showDeleteDialog = signal<boolean>(false);
@@ -46,8 +47,8 @@ export class StoresComponent implements OnInit, OnDestroy {
         distinctUntilChanged(),
         takeUntil(this.destroy$)
       )
-      .subscribe((searchTerm) => {
-        this.storeService.search(searchTerm);
+      .subscribe(() => {
+        this.triggerSearch();
       });
   }
 
@@ -56,9 +57,20 @@ export class StoresComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private triggerSearch(): void {
+    const searchTerm = this.searchTerm();
+    const status = this.statusFilter() || undefined;
+    this.storeService.search(searchTerm, status);
+  }
+
   onSearchChange(searchTerm: string): void {
     this.searchTerm.set(searchTerm);
     this.searchSubject.next(searchTerm);
+  }
+
+  onStatusFilterChange(status: string): void {
+    this.statusFilter.set(status);
+    this.triggerSearch();
   }
 
   onAdd() {

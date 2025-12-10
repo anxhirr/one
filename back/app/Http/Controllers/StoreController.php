@@ -25,6 +25,13 @@ class StoreController extends Controller
             });
         }
 
+        if ($request->has('status') && $request->status) {
+            $status = $request->status;
+            if (in_array($status, ['active', 'inactive'])) {
+                $query->where('status', $status);
+            }
+        }
+
         $stores = $query->get()->map(function ($store) {
             return [
                 'id' => (string) $store->id,

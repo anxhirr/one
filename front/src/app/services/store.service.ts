@@ -47,12 +47,15 @@ export class StoreService {
     this.loadStores(true);
   }
 
-  search(searchTerm: string): void {
+  search(searchTerm: string, status?: string): void {
     this.loading.set(true);
     const apiUrl = 'http://localhost:8000/api/stores';
     let params = new HttpParams();
     if (searchTerm) {
       params = params.set('search', searchTerm);
+    }
+    if (status) {
+      params = params.set('status', status);
     }
     this.http.get<Store[]>(apiUrl, { params }).subscribe({
       next: (stores) => {
