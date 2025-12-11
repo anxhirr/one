@@ -7,11 +7,13 @@ import { SmDashboardComponent } from './sm/dashboard/sm-dashboard.component';
 import { SrDashboardComponent } from './sr/dashboard/sr-dashboard.component';
 import { LoginComponent } from './auth/login/login.component';
 import { authGuard } from './guards/auth.guard';
+import { guestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    canActivate: [guestGuard],
   },
   {
     path: 'admin',

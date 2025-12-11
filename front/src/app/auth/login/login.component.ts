@@ -1,13 +1,7 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -17,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './login.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -30,13 +24,6 @@ export class LoginComponent implements OnInit {
 
   readonly loading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
-
-  ngOnInit(): void {
-    // Redirect if already authenticated
-    if (this.authService.isUserAuthenticated()) {
-      this.redirectToDashboard();
-    }
-  }
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
@@ -56,7 +43,9 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         this.loading.set(false);
         this.error.set(
-          err.error?.message || err.error?.email?.[0] || 'Login failed. Please check your credentials.'
+          err.error?.message ||
+            err.error?.email?.[0] ||
+            'Login failed. Please check your credentials.'
         );
       },
     });
@@ -81,4 +70,3 @@ export class LoginComponent implements OnInit {
     }
   }
 }
-
