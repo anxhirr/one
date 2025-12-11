@@ -9,18 +9,24 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StoreRepresentative } from '../../models/store-representative.model';
 import { StoreRepresentativeService } from '../../services/store-representative.service';
 import { StoreService } from '../../services/store.service';
-import { MatIconModule } from '@angular/material/icon';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { StoreRepresentativeFormComponent } from './store-representative-form/store-representative-form.component';
 
 @Component({
   selector: 'app-store-representatives',
-  imports: [CommonModule, FormsModule, StoreRepresentativeFormComponent, ConfirmDialogComponent, MatIconModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    StoreRepresentativeFormComponent,
+    ConfirmDialogComponent,
+    MatIconModule,
+  ],
   templateUrl: './store-representatives.component.html',
   styleUrl: './store-representatives.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -89,6 +95,9 @@ export class StoreRepresentativesComponent implements OnInit, OnDestroy {
         this.triggerSearch();
         this.updateUrlParams();
       });
+
+    // Always fetch fresh data on page load
+    this.triggerSearch();
   }
 
   ngOnDestroy(): void {

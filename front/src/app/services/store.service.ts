@@ -9,7 +9,6 @@ export class StoreService {
   private readonly http = inject(HttpClient);
   private readonly stores = signal<Store[]>([]);
   private readonly loading = signal<boolean>(false);
-  private loaded = false;
 
   constructor() {
     this.loadStores();
@@ -23,17 +22,13 @@ export class StoreService {
     return this.loading.asReadonly();
   }
 
-  private loadStores(force = false) {
-    if (this.loaded && !force) {
-      return;
-    }
+  private loadStores() {
     this.loading.set(true);
     // Update this URL if your backend runs on a different port or domain
     const apiUrl = 'http://localhost:8000/api/stores';
     this.http.get<Store[]>(apiUrl).subscribe({
       next: (stores) => {
         this.stores.set(stores);
-        this.loaded = true;
         this.loading.set(false);
       },
       error: (error) => {
@@ -44,7 +39,7 @@ export class StoreService {
   }
 
   refresh(): void {
-    this.loadStores(true);
+    this.loadStores();
   }
 
   search(searchTerm: string, status?: string): void {
@@ -76,8 +71,8 @@ export class StoreService {
   create(store: Omit<Store, 'id'>): void {
     const apiUrl = 'http://localhost:8000/api/stores';
     this.http.post<Store>(apiUrl, store).subscribe({
-      next: (newStore) => {
-        this.stores.update((stores) => [...stores, newStore]);
+      next: () => {
+        this.refresh();
       },
       error: (error) => {
         console.error('Error creating store:', error);
@@ -88,10 +83,8 @@ export class StoreService {
   update(id: string, updates: Partial<Omit<Store, 'id'>>): void {
     const apiUrl = `http://localhost:8000/api/stores/${id}`;
     this.http.put<Store>(apiUrl, updates).subscribe({
-      next: (updatedStore) => {
-        this.stores.update((stores) =>
-          stores.map((store) => (store.id === id ? updatedStore : store))
-        );
+      next: () => {
+        this.refresh();
       },
       error: (error) => {
         console.error('Error updating store:', error);
@@ -103,7 +96,7 @@ export class StoreService {
     const apiUrl = `http://localhost:8000/api/stores/${id}`;
     this.http.delete(apiUrl).subscribe({
       next: () => {
-        this.stores.update((stores) => stores.filter((store) => store.id !== id));
+        this.refresh();
       },
       error: (error) => {
         console.error('Error deleting store:', error);

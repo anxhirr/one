@@ -63,8 +63,8 @@ export class StoreRepresentativeService {
   create(representative: Omit<StoreRepresentative, 'id'>): void {
     const apiUrl = 'http://localhost:8000/api/store-representatives';
     this.http.post<StoreRepresentative>(apiUrl, representative).subscribe({
-      next: (newRepresentative) => {
-        this.representatives.update((reps) => [...reps, newRepresentative]);
+      next: () => {
+        this.refresh();
       },
       error: (error) => {
         console.error('Error creating store representative:', error);
@@ -75,10 +75,8 @@ export class StoreRepresentativeService {
   update(id: string, updates: Partial<Omit<StoreRepresentative, 'id'>>): void {
     const apiUrl = `http://localhost:8000/api/store-representatives/${id}`;
     this.http.put<StoreRepresentative>(apiUrl, updates).subscribe({
-      next: (updatedRepresentative) => {
-        this.representatives.update((reps) =>
-          reps.map((rep) => (rep.id === id ? updatedRepresentative : rep))
-        );
+      next: () => {
+        this.refresh();
       },
       error: (error) => {
         console.error('Error updating store representative:', error);
@@ -90,7 +88,7 @@ export class StoreRepresentativeService {
     const apiUrl = `http://localhost:8000/api/store-representatives/${id}`;
     this.http.delete(apiUrl).subscribe({
       next: () => {
-        this.representatives.update((reps) => reps.filter((rep) => rep.id !== id));
+        this.refresh();
       },
       error: (error) => {
         console.error('Error deleting store representative:', error);

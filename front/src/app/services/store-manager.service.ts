@@ -63,8 +63,8 @@ export class StoreManagerService {
   create(manager: Omit<StoreManager, 'id'>): void {
     const apiUrl = 'http://localhost:8000/api/store-managers';
     this.http.post<StoreManager>(apiUrl, manager).subscribe({
-      next: (newManager) => {
-        this.managers.update((managers) => [...managers, newManager]);
+      next: () => {
+        this.refresh();
       },
       error: (error) => {
         console.error('Error creating store manager:', error);
@@ -75,10 +75,8 @@ export class StoreManagerService {
   update(id: string, updates: Partial<Omit<StoreManager, 'id'>>): void {
     const apiUrl = `http://localhost:8000/api/store-managers/${id}`;
     this.http.put<StoreManager>(apiUrl, updates).subscribe({
-      next: (updatedManager) => {
-        this.managers.update((managers) =>
-          managers.map((manager) => (manager.id === id ? updatedManager : manager))
-        );
+      next: () => {
+        this.refresh();
       },
       error: (error) => {
         console.error('Error updating store manager:', error);
@@ -90,7 +88,7 @@ export class StoreManagerService {
     const apiUrl = `http://localhost:8000/api/store-managers/${id}`;
     this.http.delete(apiUrl).subscribe({
       next: () => {
-        this.managers.update((managers) => managers.filter((manager) => manager.id !== id));
+        this.refresh();
       },
       error: (error) => {
         console.error('Error deleting store manager:', error);

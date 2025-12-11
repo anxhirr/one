@@ -9,18 +9,24 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { StoreManager } from '../../models/store-manager.model';
 import { StoreManagerService } from '../../services/store-manager.service';
 import { StoreService } from '../../services/store.service';
-import { MatIconModule } from '@angular/material/icon';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { StoreManagerFormComponent } from './store-manager-form/store-manager-form.component';
 
 @Component({
   selector: 'app-store-managers',
-  imports: [CommonModule, FormsModule, StoreManagerFormComponent, ConfirmDialogComponent, MatIconModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    StoreManagerFormComponent,
+    ConfirmDialogComponent,
+    MatIconModule,
+  ],
   templateUrl: './store-managers.component.html',
   styleUrl: './store-managers.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -89,6 +95,9 @@ export class StoreManagersComponent implements OnInit, OnDestroy {
         this.triggerSearch();
         this.updateUrlParams();
       });
+
+    // Always fetch fresh data on page load
+    this.triggerSearch();
   }
 
   ngOnDestroy(): void {

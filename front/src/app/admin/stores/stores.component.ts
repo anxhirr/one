@@ -76,6 +76,9 @@ export class StoresComponent implements OnInit, OnDestroy {
         this.triggerSearch();
         this.updateUrlParams();
       });
+
+    // Always fetch fresh data on page load
+    this.triggerSearch();
   }
 
   ngOnDestroy(): void {
