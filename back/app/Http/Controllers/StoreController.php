@@ -32,7 +32,7 @@ class StoreController extends Controller
             }
         }
 
-        $stores = $query->get()->map(function ($store) {
+        $stores = $query->withCount(['representatives', 'managers'])->get()->map(function ($store) {
             return [
                 'id' => (string) $store->id,
                 'name' => $store->name,
@@ -40,6 +40,8 @@ class StoreController extends Controller
                 'phone' => $store->phone,
                 'email' => $store->email,
                 'status' => $store->status,
+                'srCount' => $store->representatives_count ?? 0,
+                'smCount' => $store->managers_count ?? 0,
             ];
         });
 
@@ -60,6 +62,7 @@ class StoreController extends Controller
         ]);
 
         $store = Store::create($validated);
+        $store->loadCount(['representatives', 'managers']);
 
         return response()->json([
             'id' => (string) $store->id,
@@ -68,6 +71,8 @@ class StoreController extends Controller
             'phone' => $store->phone,
             'email' => $store->email,
             'status' => $store->status,
+            'srCount' => $store->representatives_count ?? 0,
+            'smCount' => $store->managers_count ?? 0,
         ], 201);
     }
 
@@ -91,6 +96,7 @@ class StoreController extends Controller
         ]);
 
         $store->update($validated);
+        $store->loadCount(['representatives', 'managers']);
 
         return response()->json([
             'id' => (string) $store->id,
@@ -99,6 +105,8 @@ class StoreController extends Controller
             'phone' => $store->phone,
             'email' => $store->email,
             'status' => $store->status,
+            'srCount' => $store->representatives_count ?? 0,
+            'smCount' => $store->managers_count ?? 0,
         ]);
     }
 

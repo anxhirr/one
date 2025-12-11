@@ -5,4 +5,6 @@ export interface Store {
   phone: string;
   email: string;
   status: 'active' | 'inactive';
+  srCount?: number;
+  smCount?: number;
 }

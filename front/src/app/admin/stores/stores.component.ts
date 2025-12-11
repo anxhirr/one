@@ -9,13 +9,11 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { Store } from '../../models/store.model';
-import { StoreManagerService } from '../../services/store-manager.service';
-import { StoreRepresentativeService } from '../../services/store-representative.service';
 import { StoreService } from '../../services/store.service';
-import { MatIconModule } from '@angular/material/icon';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { StoreFormComponent } from './store-form/store-form.component';
 
@@ -28,8 +26,6 @@ import { StoreFormComponent } from './store-form/store-form.component';
 })
 export class StoresComponent implements OnInit, OnDestroy {
   private readonly storeService = inject(StoreService);
-  private readonly srService = inject(StoreRepresentativeService);
-  private readonly smService = inject(StoreManagerService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
@@ -43,14 +39,6 @@ export class StoresComponent implements OnInit, OnDestroy {
   readonly editingStore = signal<Store | null>(null);
   readonly showDeleteDialog = signal<boolean>(false);
   readonly storeToDelete = signal<Store | null>(null);
-
-  readonly storeCounts = computed(() => {
-    return this.stores().map((store) => ({
-      store,
-      srCount: this.srService.getByStoreId(store.id).length,
-      smCount: this.smService.getByStoreId(store.id).length,
-    }));
-  });
 
   readonly hasActiveFilters = computed(() => {
     return !!(this.searchTerm() || this.statusFilter());
