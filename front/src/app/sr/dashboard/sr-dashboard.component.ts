@@ -5,9 +5,11 @@ import {
   inject,
   OnInit,
   signal,
+  computed,
 } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { DashboardData } from '../../models/dashboard.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sr-dashboard',
@@ -18,10 +20,13 @@ import { DashboardData } from '../../models/dashboard.model';
 })
 export class SrDashboardComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
+  private readonly authService = inject(AuthService);
 
   readonly dashboardData = signal<DashboardData | null>(null);
   readonly loading = signal<boolean>(true);
   readonly error = signal<string | null>(null);
+  readonly loggingOut = signal<boolean>(false);
+  readonly currentUser = computed(() => this.authService.getUser()());
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -46,6 +51,22 @@ export class SrDashboardComponent implements OnInit {
 
   refresh(): void {
     this.loadDashboardData();
+  }
+
+  logout(): void {
+    this.loggingOut.set(true);
+    this.authService.logout().subscribe({
+      next: () => {
+        // Navigation is handled by AuthService
+        this.loggingOut.set(false);
+      },
+      error: (err) => {
+        console.error('Error during logout:', err);
+        // Even if API call fails, clear local auth and navigate
+        // AuthService handles this in the tap operator, but we ensure it happens
+        this.loggingOut.set(false);
+      },
+    });
   }
 }
 
