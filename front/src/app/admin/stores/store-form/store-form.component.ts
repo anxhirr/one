@@ -17,7 +17,6 @@ import { StoreService } from '../../../services/store.service';
   selector: 'app-store-form',
   imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './store-form.component.html',
-  styleUrl: './store-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoreFormComponent {

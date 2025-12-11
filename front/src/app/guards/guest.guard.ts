@@ -13,16 +13,13 @@ export const guestGuard: CanActivateFn = (route, state) => {
 
   // User is authenticated, redirect to appropriate dashboard based on role
   const user = authService.getUser()();
-  
+
   if (user?.role === 'store_manager') {
     router.navigate(['/sm/dashboard']);
   } else if (user?.role === 'store_representative') {
     router.navigate(['/sr/dashboard']);
-  } else {
-    // Default to admin if no role
-    router.navigate(['/admin/stores']);
   }
+  // Note: Users without roles (admin) should access admin pages via passcode, not through guest guard
 
   return false;
 };
-

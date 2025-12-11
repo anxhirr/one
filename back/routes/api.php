@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StoreRepresentativeController;
@@ -8,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 
 // Public authentication routes
 Route::post('login', [AuthController::class, 'login'])->name('login');
+
+// Admin passcode verification route
+Route::post('admin/verify-passcode', [AdminController::class, 'verifyPasscode'])->name('admin.verify-passcode');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {

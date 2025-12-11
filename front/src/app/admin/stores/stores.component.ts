@@ -21,7 +21,6 @@ import { StoreFormComponent } from './store-form/store-form.component';
   selector: 'app-stores',
   imports: [CommonModule, FormsModule, StoreFormComponent, ConfirmDialogComponent, MatIconModule],
   templateUrl: './stores.component.html',
-  styleUrl: './stores.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoresComponent implements OnInit, OnDestroy {

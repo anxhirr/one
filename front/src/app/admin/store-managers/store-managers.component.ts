@@ -28,7 +28,6 @@ import { StoreManagerFormComponent } from './store-manager-form/store-manager-fo
     MatIconModule,
   ],
   templateUrl: './store-managers.component.html',
-  styleUrl: './store-managers.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoreManagersComponent implements OnInit, OnDestroy {

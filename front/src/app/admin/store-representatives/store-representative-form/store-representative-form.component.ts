@@ -8,7 +8,15 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { StoreRepresentative } from '../../../models/store-representative.model';
 import { StoreRepresentativeService } from '../../../services/store-representative.service';
@@ -18,7 +26,6 @@ import { StoreService } from '../../../services/store.service';
   selector: 'app-store-representative-form',
   imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './store-representative-form.component.html',
-  styleUrl: './store-representative-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoreRepresentativeFormComponent {
@@ -32,15 +39,18 @@ export class StoreRepresentativeFormComponent {
 
   readonly stores = this.storeService.getAll();
 
-  readonly form: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required]],
-    storeId: ['', [Validators.required]],
-    status: ['active', [Validators.required]],
-    password: ['', []],
-    confirmPassword: ['', []],
-  }, { validators: this.passwordMatchValidator() });
+  readonly form: FormGroup = this.fb.group(
+    {
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required]],
+      storeId: ['', [Validators.required]],
+      status: ['active', [Validators.required]],
+      password: ['', []],
+      confirmPassword: ['', []],
+    },
+    { validators: this.passwordMatchValidator() }
+  );
 
   readonly isEditMode = signal<boolean>(false);
 
@@ -85,7 +95,7 @@ export class StoreRepresentativeFormComponent {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.get('password');
       const confirmPassword = control.get('confirmPassword');
-      
+
       if (!password || !confirmPassword) {
         return null;
       }

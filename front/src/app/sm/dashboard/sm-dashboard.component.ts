@@ -2,20 +2,19 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
   signal,
-  computed,
 } from '@angular/core';
-import { DashboardService } from '../../services/dashboard.service';
 import { DashboardData } from '../../models/dashboard.model';
 import { AuthService } from '../../services/auth.service';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-sm-dashboard',
   imports: [CommonModule],
   templateUrl: './sm-dashboard.component.html',
-  styleUrl: './sm-dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SmDashboardComponent implements OnInit {
@@ -65,4 +64,3 @@ export class SmDashboardComponent implements OnInit {
     });
   }
 }
-

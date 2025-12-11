@@ -28,7 +28,6 @@ import { StoreRepresentativeFormComponent } from './store-representative-form/st
     MatIconModule,
   ],
   templateUrl: './store-representatives.component.html',
-  styleUrl: './store-representatives.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoreRepresentativesComponent implements OnInit, OnDestroy {
