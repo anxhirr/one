@@ -49,10 +49,6 @@ export class SmDashboardComponent implements OnInit {
     });
   }
 
-  refresh(): void {
-    this.loadDashboardData();
-  }
-
   logout(): void {
     this.loggingOut.set(true);
     this.authService.logout().subscribe({

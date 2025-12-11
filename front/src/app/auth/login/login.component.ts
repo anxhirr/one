@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -14,7 +14,6 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
 
   readonly loginForm: FormGroup = this.fb.group({
@@ -52,13 +51,6 @@ export class LoginComponent {
   }
 
   private redirectToDashboard(role?: string | null): void {
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || null;
-
-    if (returnUrl) {
-      this.router.navigate([returnUrl]);
-      return;
-    }
-
     // Redirect based on user role
     if (role === 'store_manager') {
       this.router.navigate(['/sm/dashboard']);
