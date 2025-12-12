@@ -32,7 +32,7 @@ class StoreController extends Controller
             }
         }
 
-        $stores = $query->withCount(['representatives', 'managers'])->get()->map(function ($store) {
+        $stores = $query->withCount(['representatives', 'managers', 'targets'])->get()->map(function ($store) {
             return [
                 'id' => (string) $store->id,
                 'name' => $store->name,
@@ -42,6 +42,7 @@ class StoreController extends Controller
                 'status' => $store->status,
                 'srCount' => $store->representatives_count ?? 0,
                 'smCount' => $store->managers_count ?? 0,
+                'targetsCount' => $store->targets_count ?? 0,
             ];
         });
 
@@ -62,7 +63,7 @@ class StoreController extends Controller
         ]);
 
         $store = Store::create($validated);
-        $store->loadCount(['representatives', 'managers']);
+        $store->loadCount(['representatives', 'managers', 'targets']);
 
         return response()->json([
             'id' => (string) $store->id,
@@ -73,6 +74,7 @@ class StoreController extends Controller
             'status' => $store->status,
             'srCount' => $store->representatives_count ?? 0,
             'smCount' => $store->managers_count ?? 0,
+            'targetsCount' => $store->targets_count ?? 0,
         ], 201);
     }
 
@@ -96,7 +98,7 @@ class StoreController extends Controller
         ]);
 
         $store->update($validated);
-        $store->loadCount(['representatives', 'managers']);
+        $store->loadCount(['representatives', 'managers', 'targets']);
 
         return response()->json([
             'id' => (string) $store->id,
@@ -107,6 +109,7 @@ class StoreController extends Controller
             'status' => $store->status,
             'srCount' => $store->representatives_count ?? 0,
             'smCount' => $store->managers_count ?? 0,
+            'targetsCount' => $store->targets_count ?? 0,
         ]);
     }
 

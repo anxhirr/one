@@ -87,6 +87,11 @@
               SMs
             </th>
             <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Targets
+            </th>
+            <th
               class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Actions
@@ -96,11 +101,11 @@
         <tbody class="bg-white divide-y divide-gray-200">
           @if (loading()) {
           <tr>
-            <td colspan="8" class="px-6 py-4 text-center text-gray-500">Loading stores...</td>
+            <td colspan="9" class="px-6 py-4 text-center text-gray-500">Loading stores...</td>
           </tr>
           } @else if (stores().length === 0) {
           <tr>
-            <td colspan="8" class="px-6 py-4 text-center text-gray-500">No stores found</td>
+            <td colspan="9" class="px-6 py-4 text-center text-gray-500">No stores found</td>
           </tr>
           } @else { @for (store of stores(); track store.id) {
           <tr class="hover:bg-gray-50">
@@ -133,7 +138,18 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ store.smCount ?? 0 }}
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ store.targetsCount ?? 0 }}
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button
+                type="button"
+                (click)="onViewTargets(store)"
+                class="text-green-600 hover:text-green-900 mr-4 focus:outline-none focus:ring-2 focus:ring-green-500 rounded flex items-center gap-1 inline-flex"
+              >
+                <mat-icon class="text-base">target</mat-icon>
+                Targets
+              </button>
               <button
                 type="button"
                 (click)="onEdit(store)"

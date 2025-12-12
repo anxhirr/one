@@ -50,5 +50,21 @@ class Store extends Model
     {
         return $this->hasMany(StoreManager::class);
     }
+
+    /**
+     * Get the targets for the store.
+     */
+    public function targets(): HasMany
+    {
+        return $this->hasMany(StoreTarget::class);
+    }
+
+    /**
+     * Get the active targets for the store.
+     */
+    public function activeTargets(): HasMany
+    {
+        return $this->hasMany(StoreTarget::class)->where('status', 'active');
+    }
 }
 

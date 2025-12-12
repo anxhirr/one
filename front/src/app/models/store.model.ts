@@ -7,4 +7,5 @@ export interface Store {
   status: 'active' | 'inactive';
   srCount?: number;
   smCount?: number;
+  targetsCount?: number;
 }

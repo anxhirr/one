@@ -3,6 +3,7 @@ import { AdminLayoutComponent } from './admin/admin-layout/admin-layout.componen
 import { PasscodePromptComponent } from './admin/passcode/passcode-prompt.component';
 import { StoreManagersComponent } from './admin/store-managers/store-managers.component';
 import { StoreRepresentativesComponent } from './admin/store-representatives/store-representatives.component';
+import { StoreTargetsComponent } from './admin/stores/store-targets/store-targets.component';
 import { StoresComponent } from './admin/stores/stores.component';
 import { LoginComponent } from './auth/login/login.component';
 import { authGuard } from './guards/auth.guard';
@@ -29,6 +30,10 @@ export const routes: Routes = [
       {
         path: 'stores',
         component: StoresComponent,
+      },
+      {
+        path: 'stores/:storeId/targets',
+        component: StoreTargetsComponent,
       },
       {
         path: 'store-representatives',

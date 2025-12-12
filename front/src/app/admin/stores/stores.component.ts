@@ -168,4 +168,8 @@ export class StoresComponent implements OnInit, OnDestroy {
     this.showDeleteDialog.set(false);
     this.storeToDelete.set(null);
   }
+
+  onViewTargets(store: Store) {
+    this.router.navigate(['/admin/stores', store.id, 'targets']);
+  }
 }

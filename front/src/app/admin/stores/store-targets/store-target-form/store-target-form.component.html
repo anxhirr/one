@@ -1,0 +1,146 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="form-title"
+>
+  <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="p-6">
+      <h2 id="form-title" class="text-2xl font-bold text-gray-900 mb-6">
+        {{ isEditMode() ? 'Edit Target' : 'Add Target' }}
+      </h2>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label for="metric_type" class="block text-sm font-medium text-gray-700 mb-1">
+            Metric Type <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="metric_type"
+            formControlName="metric_type"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [class.border-red-500]="
+              form.get('metric_type')?.invalid && form.get('metric_type')?.touched
+            "
+          >
+            <option value="">Select metric type</option>
+            <option value="customer_visits">Customer Visits</option>
+            <option value="orders">Orders</option>
+            <option value="revenue">Revenue</option>
+          </select>
+          @if (form.get('metric_type')?.invalid && form.get('metric_type')?.touched) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('metric_type') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="period_type" class="block text-sm font-medium text-gray-700 mb-1">
+            Period Type <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="period_type"
+            formControlName="period_type"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [class.border-red-500]="
+              form.get('period_type')?.invalid && form.get('period_type')?.touched
+            "
+          >
+            <option value="">Select period type</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+          @if (form.get('period_type')?.invalid && form.get('period_type')?.touched) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('period_type') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="target_value" class="block text-sm font-medium text-gray-700 mb-1">
+            Target Value <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="target_value"
+            type="number"
+            step="0.01"
+            formControlName="target_value"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [class.border-red-500]="
+              form.get('target_value')?.invalid && form.get('target_value')?.touched
+            "
+            placeholder="Enter target value"
+          />
+          @if (form.get('target_value')?.invalid && form.get('target_value')?.touched) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('target_value') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="period_start" class="block text-sm font-medium text-gray-700 mb-1">
+            Period Start <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="period_start"
+            type="date"
+            formControlName="period_start"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [class.border-red-500]="
+              form.get('period_start')?.invalid && form.get('period_start')?.touched
+            "
+          />
+          @if (form.get('period_start')?.invalid && form.get('period_start')?.touched) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('period_start') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="period_end" class="block text-sm font-medium text-gray-700 mb-1">
+            Period End
+          </label>
+          <input
+            id="period_end"
+            type="date"
+            formControlName="period_end"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Optional"
+          />
+        </div>
+
+        <div>
+          <label for="status" class="block text-sm font-medium text-gray-700 mb-1">
+            Status <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="status"
+            formControlName="status"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors flex items-center gap-2"
+          >
+            <mat-icon class="text-lg">close</mat-icon>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            [disabled]="form.invalid"
+            class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <mat-icon class="text-lg">save</mat-icon>
+            {{ isEditMode() ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
